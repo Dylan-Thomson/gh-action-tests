@@ -11,16 +11,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests
-
       - name: Comment on Pull Request
         run: |
           COMMENT="Thank you for the new commit! 🚀"
@@ -30,18 +20,4 @@ jobs:
           echo "COMMENT: $COMMENT"
           echo "ISSUE_NUMBER: $ISSUE_NUMBER"
 
-          python - <<EOF
-import requests
-
-url = f"https://api.github.com/repos/${{ github.repository }}/issues/{ISSUE_NUMBER}/comments"
-headers = {
-    "Authorization": f"Bearer {GITHUB_TOKEN}",
-    "Accept": "application/vnd.github.v3+json"
-}
-data = {
-    "body": "$COMMENT"
-}
-
-response = requests.post(url, headers=headers, json=data)
-print(response.status_code, response.text)
-EOF
+          gh issue comment $ISSUE_NUMBER --body "$COMMENT"
