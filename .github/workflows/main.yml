@@ -11,9 +11,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -24,14 +21,24 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests
 
-      - name: Leave Comment on Pull Request
+      - name: Comment on Pull Request
         run: |
           COMMENT="Thank you for the new commit! 🚀"
           GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
-          ISSUE_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+          ISSUE_NUMBER=$(echo "${{ github.event_path }}" | jq --raw-output .pull_request.number)
 
-          curl -X POST \
-            -H "Authorization: Bearer $GITHUB_TOKEN" \
-            -H "Accept: application/vnd.github.v3+json" \
-            -d "{\"body\":\"$COMMENT\"}" \
-            "https://api.github.com/repos/${{ github.repository }}/issues/$ISSUE_NUMBER/comments"
+          python - <<EOF
+import requests
+
+url = f"https://api.github.com/repos/${{ github.repository }}/issues/{ISSUE_NUMBER}/comments"
+headers = {
+    "Authorization": f"Bearer {GITHUB_TOKEN}",
+    "Accept": "application/vnd.github.v3+json"
+}
+data = {
+    "body": COMMENT
+}
+
+response = requests.post(url, headers=headers, json=data)
+print(response.status_code, response.text)
+EOF
