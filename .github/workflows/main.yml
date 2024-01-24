@@ -24,11 +24,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests
 
-      - name: Leave Comment on Pull Request
+      - name: Debug
         run: |
+          echo "GITHUB_EVENT_PATH: $GITHUB_EVENT_PATH"
+          echo "Event JSON:"
+          cat "$GITHUB_EVENT_PATH"
           PR_NUMBER=$(jq -r .pull_request.number "$GITHUB_EVENT_PATH")
+          echo "PR_NUMBER: $PR_NUMBER"
           COMMENT="Thank you for the new commit! 🚀"
+          echo "COMMENT: $COMMENT"
           GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          echo "GITHUB_TOKEN: $GITHUB_TOKEN"
           
           curl -X POST \
             -H "Authorization: Bearer $GITHUB_TOKEN" \
