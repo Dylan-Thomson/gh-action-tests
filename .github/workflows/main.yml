@@ -30,4 +30,18 @@ jobs:
           echo "COMMENT: $COMMENT"
           echo "ISSUE_NUMBER: $ISSUE_NUMBER"
 
-          python -c "import requests; url = 'https://api.github.com/repos/${{ github.repository }}/issues/$ISSUE_NUMBER/comments'; headers = {'Authorization': f'Bearer {GITHUB_TOKEN}', 'Accept': 'application/vnd.github.v3+json'}; data = {'body': '$COMMENT'}; response = requests.post(url, headers=headers, json=data); print(response.status_code, response.text)"
+          python - <<EOF
+import requests
+
+url = f"https://api.github.com/repos/${{ github.repository }}/issues/{ISSUE_NUMBER}/comments"
+headers = {
+    "Authorization": f"Bearer {GITHUB_TOKEN}",
+    "Accept": "application/vnd.github.v3+json"
+}
+data = {
+    "body": "$COMMENT"
+}
+
+response = requests.post(url, headers=headers, json=data)
+print(response.status_code, response.text)
+EOF
