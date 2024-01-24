@@ -26,8 +26,7 @@ jobs:
 
       - name: Leave Comment on Pull Request
         run: |
-          EVENT_PATH="${{ github.workspace }}/$(basename ${{ github.event_path }})"
-          PR_NUMBER=$(jq -r .pull_request.number "$EVENT_PATH")
+          PR_NUMBER=$(jq -r .pull_request.number "$GITHUB_EVENT_PATH")
           COMMENT="Thank you for the new commit! 🚀"
           GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
           
